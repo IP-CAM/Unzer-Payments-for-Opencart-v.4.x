@@ -1,0 +1,14 @@
+{% if unzer_add_invoice_info %}
+
+  <p>
+    {{ unzer_please_transfer }} {{ unzer_invoice_trans_amount }}
+  </p>
+
+  <p>
+    {{ unzer_holder }}: {{ unzer_account_holder }}<br>
+    {{ unzer_iban }}: {{ unzer_account_iban }}<br>
+    {{ unzer_bic }}: {{ unzer_account_bic }}<br>
+    {{ unzer_please_use_identification }}: {{ unzer_account_descriptor }}
+  </p>
+
+{% endif %}

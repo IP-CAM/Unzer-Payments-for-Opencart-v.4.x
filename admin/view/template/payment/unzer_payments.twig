@@ -1,0 +1,162 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="float-end">
+        <button type="submit" form="form-payment" data-bs-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa-solid fa-save"></i></button>
+        <a href="{{ back }}" data-bs-toggle="tooltip" title="{{ button_back }}" class="btn btn-light"><i class="fa-solid fa-reply"></i></a></div>
+      <h1>{{ heading_title }}</h1>
+      <ol class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+          <li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-header"><i class="fa-solid fa-pencil"></i> {{ text_edit }}</div>
+      <div class="card-body">
+        <form id="form-payment" action="{{ save }}" method="post" data-oc-toggle="ajax">
+
+
+          <div class="row mb-3">
+            <label for="input-status" class="col-sm-2 col-form-label">Modul {{ entry_status }}</label>
+            <div class="col-sm-10">
+              <div class="form-check form-switch form-switch-lg">
+                <input type="hidden" name="payment_unzer_payments_status" value="0"/>
+                <input type="checkbox" name="payment_unzer_payments_status" value="1" id="input-status" class="form-check-input"{% if payment_unzer_payments_status %} checked{% endif %}/>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label for="input-public-key" class="col-sm-2 col-form-label">{{ entry_public_key }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="payment_unzer_payments_public_key" value="{{ payment_unzer_payments_public_key }}" placeholder="{{ entry_public_key }}" id="input-public-key" class="form-control"/>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label for="input-private-key" class="col-sm-2 col-form-label">{{ entry_private_key }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="payment_unzer_payments_private_key" value="{{ payment_unzer_payments_private_key }}" placeholder="{{ entry_private_key }}" id="input-private-key" class="form-control"/>
+            </div>
+          </div>
+
+          {% if payment_unzer_payments_private_key != '' %}
+
+            <div class="row mb-3">
+              <div class="col">
+                <hr>
+                <h4>{{ status_settings }}</h4>
+              </div>
+            </div>
+
+            {% for order_status_setting_key, order_status_setting in order_status_settings %}
+            <div class="row mb-3">
+              <label for="input-{{ order_status_setting_key }}" class="col-sm-2 col-form-label">{{ _context[order_status_setting_key] }}</label>
+              <div class="col-sm-10">
+                <select name="{{ order_status_setting_key }}" id="input-{{ order_status_setting_key }}" class="form-select">
+                  {% for order_status in order_statuses %}
+                    <option value="{{ order_status.order_status_id }}"{% if order_status.order_status_id == order_status_setting %} selected{% endif %}>{{ order_status.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+           {% endfor %}
+
+
+            <div class="row mb-3">
+              <div class="col">
+                <hr>
+                <h4>{{ payment_methods_setting }}</h4>
+              </div>
+            </div>
+
+          {% for payment_unzer_payments_payment_method_key, payment_unzer_payments_payment_method in payment_unzer_payments_payment_methods %}
+            <div class="row mb-3">
+              <label for="input-{{ payment_unzer_payments_payment_method_key }}" class="col-sm-2 col-form-label">
+                {% if _context[payment_unzer_payments_payment_method_key] is defined %}
+                  {{ _context[payment_unzer_payments_payment_method_key] }}
+                {% else %}
+                  {{ payment_unzer_payments_payment_method_key }}
+                {% endif %}
+              </label>
+              <div class="col-sm-10">
+                <div class="form-check form-switch form-switch-lg">
+                  <input type="hidden" name="payment_unzer_payments_payment_methods_{{ payment_unzer_payments_payment_method_key }}_status" value="0"/>
+                  <input type="checkbox" name="payment_unzer_payments_payment_methods_{{ payment_unzer_payments_payment_method_key }}_status" value="1" id="input-status-{{ payment_unzer_payments_payment_method_key }}" class="form-check-input"{% if payment_unzer_payments_payment_method.status %} checked{% endif %}/>
+                </div>
+              </div>
+            </div>
+            {% if payment_unzer_payments_payment_method.charge_mode is defined %}
+              <div class="row mb-3">
+                <label for="input-{{ payment_unzer_payments_payment_method_key }}-charge-mode" class="col-sm-2 col-form-label">
+                  {% if _context[payment_unzer_payments_payment_method_key] is defined %}
+                    {{ _context[payment_unzer_payments_payment_method_key] }}
+                  {% else %}
+                    {{ payment_unzer_payments_payment_method_key }}
+                  {% endif %}
+                  {{ chargemode }}</label>
+                <div class="col-sm-10">
+                  <select name="payment_unzer_payments_payment_methods_{{ payment_unzer_payments_payment_method_key }}_charge_mode" id="input-{{ payment_unzer_payments_payment_method_key }}-charge-mode" class="form-select">
+                    <option value="charge" {% if payment_unzer_payments_payment_method.charge_mode == 'charge' %} selected{% endif %}>{{ charge }}</option>
+                    <option value="authorize" {% if payment_unzer_payments_payment_method.charge_mode == 'authorize' %} selected{% endif %}>{{ authorize }}</option>
+                  </select>
+                </div>
+              </div>
+            {% endif %}
+
+            {% endfor %}
+
+            {% if webhooks %}
+              <a name="unzer_webhook_list"></a>
+              <div class="row mb-3">
+                <div class="col">
+                  <hr>
+                  <h4>Webhooks</h4>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col">
+                  <table class="table">
+                    <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Event</th>
+                      <th>URL</th>
+                      <th>&nbsp;</th>
+                    </tr>
+                    </thead>
+                    {% for webhook in webhooks %}
+                    <tr>
+                      <td>
+                        {{ webhook.getId() }}
+                      </td>
+                      <td>
+                        {{ webhook.getEvent() }}
+                      </td>
+                      <td>
+                        {{ webhook.getUrl() }}
+                      </td>
+                      <td>
+                        <a href="{{ webhook_delete_url|replace({'UNZ_WEBHOOK_ID': webhook.getId()}) }}#unzer_webhook_list" onclick="return confirm('{{ unzer_delete_confirm }}')">
+                          <i class="fa-solid fa-trash"></i>
+                        </a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </table>
+                </div>
+              </div>
+
+            {% endif %}
+
+          {% endif %}
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }}
