@@ -24,3 +24,4 @@ $_['wechatpay'] = 'WeChatPay';
 $_['paylater-direct-debit'] = 'Paylater Lastschrift';
 $_['paylater-installment'] = 'Paylater Ratenkauf';
 $_['paylater-invoice'] = 'Paylater Rechnungskauf';
+$_['openbanking-pis'] = 'Direkt-Überweisung';

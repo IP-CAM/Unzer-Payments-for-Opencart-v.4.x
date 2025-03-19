@@ -116,8 +116,13 @@ class UnzerPayments extends \Opencart\System\Engine\Controller
                 );
             }
 
+            $oc_customer_id = 'o' . $order['customer_id'] . '-u';
+            if (!$this->customer->isLogged()) {
+                $oc_customer_id = 'o' . $orderId . '-g';
+            }
+
             $unzerCustomer = (new \UnzerSDK\Resources\Customer())
-                ->setCustomerId($order['customer_id'])
+                ->setCustomerId($oc_customer_id)
                 ->setFirstname($order['firstname'])
                 ->setLastname($order['lastname'])
                 ->setEmail($order['email'])
@@ -179,11 +184,19 @@ class UnzerPayments extends \Opencart\System\Engine\Controller
 
             if (isset($order['shipping_method']) && is_array($order['shipping_method'])) {
                 if (isset($order['shipping_method']['cost']) && $order['shipping_method']['cost'] > 0) {
-                    $tmpSum += $order['shipping_method']['cost'];
+
+                    $shipping_cost = $order['shipping_method']['cost'];
+                    $tax_rates = $this->tax->getRates($order['shipping_method']['cost'], $order['shipping_method']['tax_class_id']);
+                    if ($tax_rates){
+                        $tax_rate = array_pop($tax_rates);
+                        $shipping_cost += $tax_rate['amount'];
+                    }
+
+                    $tmpSum += $shipping_cost;
                     $basketItem = (new \UnzerSDK\Resources\EmbeddedResources\BasketItem())
                         ->setBasketItemReferenceId('Shipping')
                         ->setQuantity(1)
-                        ->setAmountPerUnitGross($this->numberFormat($order['shipping_method']['cost']))
+                        ->setAmountPerUnitGross($this->numberFormat($shipping_cost))
                         ->setTitle('Shipping')
                         ->setType(\UnzerSDK\Constants\BasketItemTypes::SHIPMENT);
                     $basketItems[] = $basketItem;
