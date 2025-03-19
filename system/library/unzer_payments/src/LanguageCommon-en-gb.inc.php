@@ -24,3 +24,4 @@ $_['wechatpay'] = 'WeChatPay';
 $_['paylater-direct-debit'] = 'Paylater Direct Debit';
 $_['paylater-installment'] = 'Paylater Installment';
 $_['paylater-invoice'] = 'Paylater Invoice';
+$_['openbanking-pis'] = 'Direct Bank Transfer';
